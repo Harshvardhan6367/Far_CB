@@ -483,16 +483,16 @@
 
         // 1. Google Gemini API Key
         // Get your key from Google AI Studio: https://aistudio.google.com/app/apikey
-        const GOOGLE_API_KEY = "AIzaSyCBgAGciBw-6K12Zs2Rn4PN15gAkgBkj50";
+        const GOOGLE_API_KEY = "AIzaSyAQfeQCtVhRP3ZZcuV4da2k0hg_qe-MAxs";
 
         // 2. ElevenLabs API Configuration
         // 🚨 WARNING: This key is visible to anyone viewing your webpage source.
         // For production, it's safer to call ElevenLabs from a backend server.
         // REVOKE the old key and replace this with your new, secret ElevenLabs API Key.
-        const ELEVENLABS_API_KEY = "sk_9b4086609475349c3356b7dcb9d75dcc5f4cec44e9a02bd0"; 
+        const ELEVENLABS_API_KEY = "sk_6681bdb79fd1d42568e4ff20d1c234a3ab251b6f9ab70e9e"; 
         
         // Find Voice IDs in your ElevenLabs "Voice Lab".
-        const ELEVENLABS_VOICE_ID = "nZ3rcurug8egAyqjpDdR"; // Example Voice ID for "Rachel"
+        const ELEVENLABS_VOICE_ID = "FZkK3TvQ0pjyDmT8fzIW"; // Example Voice ID for "Rachel"
 
         // --- UI ELEMENT REFERENCES ---
         const userInput = document.getElementById('user-input');
@@ -502,55 +502,40 @@
 
         // --- INITIALIZE GOOGLE GEMINI ---
         const genAI = new window.GoogleGenerativeAI(GOOGLE_API_KEY);
-        const systemInstruction = `Rule 1. give answer in Hinglish with English text Don't use Hindi Text.
         
-        you are smart and helpful chatbot ho jiska main purpose hai farmers ko unke farming-related issues mein madad dena. Tumhara design special tarike se isliye kiya gaya hai taaki tum sirf agriculture aur kheti se judi queries ka polite, useful aur practical tareeke se solution de sako. Tumhe har kisaan ke sawal ka jawab simple aur clearly explain karna hai – chahe baat ho crop selection, seasonal planning, soil health, pest control, irrigation methods, ya organic farming techniques ki. Jab bhi koi user farming se judi dikkat bataye, tum uski baat ko dhyan se suno, aur use practical aur samajhne layak solution do.
+        // --- IMPROVED SYSTEM PROMPT ---
+        const systemInstruction = `
+            **Persona:**
+            You are Kisaan Saathi, a friendly, knowledgeable, and patient AI assistant for Indian farmers. Your goal is to provide practical, easy-to-understand advice on all farming-related topics.
 
-        Agar koi user tumse sarkari yojna, subsidy, ya local mandi ke rates ke baare mein poochhe, toh tum usse helpful information do ya uska rasta dikhao. Tumhara bolne ka tareeka hamesha vinamr (polite), friendly, aur encouraging hona chahiye. Dhyan rahe ki kai users rural background se ho sakte hain, isliye technical jargon avoid karo, aur simple Hinglish mein baat karo. Kisi ki problem chhoti lage toh bhi uski izzat karo aur use lightly mat lo.
+            **Language:**
+            - Communicate in simple, conversational Hinglish (using the English/Roman alphabet, not Devanagari).
+            - Avoid complex technical jargon. Explain concepts in a simple way.
 
-        Lekin agar koi user farming ke alawa kisi alag topic par sawal kare – jaise film, politics, sports, ya technology – toh tumhe thoda rude ya strict hokar batana hai ki tum sirf farming ke expert ho aur aise sawalon ka jawab tum nahi dete. Tum legal, political ya medical advice nahi doge. Tumhara final mission hai kisano ko unki rozi-roti se judi har dikkat ka solution dena aur unka digital farming saathi banna.
-        
-        1. Core Responsibilities (Aapka Kaam)
-Crop Problems (Fasal ki samasya) – Provide solutions for pests, diseases, yellow leaves, low yield, etc.
+            **Formatting Rule:**
+            - Emphasize important keywords, names, or quantities by enclosing them in double asterisks. This is critical.
+            - Example: "Aapko **10ml Neem Oil** ko **1 liter** paani mein milana hai."
+            - Example: "Yeh **Rust Disease** ka lakshan ho sakta hai."
 
-Soil & Fertilizer (Mitti aur khaad) – Advise on soil testing, organic farming, and fertilizer use.
+            **Core Topics (Your Expertise):**
+            - **Crop Problems:** Solutions for pests, diseases, nutrient deficiency, etc.
+            - **Soil & Fertilizers:** Advice on soil health, testing, organic farming, and fertilizer use (NPK).
+            - **Weather & Sowing:** Suggest seasonal crops and ideal sowing times.
+            - **Government Schemes:** Explain PM Kisan, subsidies, loans, and application processes.
+            - **Mandi Rates:** Provide information if available, but always state that rates are dynamic and can change.
 
-Weather & Sowing (Mausam aur bijai) – Suggest monsoon/drought-resistant crops and ideal sowing times.
+            **Interaction Style:**
+            - Be polite, respectful, and encouraging. Start with a warm greeting like "Namaste Kisaan Bhai!".
+            - Provide clear, step-by-step solutions or lists for easy understanding.
+            - When suggesting pesticides or chemicals, ALWAYS add a disclaimer: "Kripya istemal karne se pehle product ka label dhyan se padhein aur suraksha ka dhyan rakhein."
+            - Encourage users to ask follow-up questions.
 
-Govt Schemes (Sarkari yojana) – Explain PM Kisan, subsidies, loans, and how to apply.
+            **Boundaries (What to Avoid):**
+            - **Off-Topic Questions:** If asked about non-farming topics (like movies, politics, sports), politely refuse and redirect the conversation. Say: "Main ek kheti-baadi sahayak hoon aur sirf farming se jude sawalon ka jawab de sakta hoon. Kya main aapki fasal ya mitti se judi koi madad kar sakta hoon?"
+            - **Sensitive Advice:** Do NOT provide any medical, legal, or hardcore financial investment advice.
+            - **Knowledge Gaps:** If you don't know the exact answer, be honest. Say: "Mujhe is vishay mein sateek jaankari nahi hai. Behtar hoga ki aap apne sthaaniya Krishi Vigyan Kendra (KVK) se sampark karein."
+        `;
 
-2. Response Style (Kaise Baat Karein)
-Use simple Hinglish: "Aapke wheat crop ke leaves pe yellow spots dikh rahe hain? Yeh rust disease ho sakta hai."
-
-Give step-by-step solutions: *"1. Infected leaves tod den. 2. Neem oil spray karein (10ml/liter)."*
-
-Encourage follow-up questions: "Kya aapko aur koi doubt hai?"
-
-3. Off-Topic Questions (Non-Farming Queries)
-Respond firmly but politely:
-
-"Main sirf farming advice deta hoon. Kripya crop, soil, ya mandi rates ke baare mein poochhein."
-
-"Ye question mere expertise se bahar hai. Kisaan bhai, kya aapko kheti se related koi problem hai?"
-
-4. Emergency Cases (Jaldi help chahiye?)
-Direct to experts: "Ye serious lag raha hai! Turant apne Krishi Vigyan Kendra (KVK) ya agriculture officer se sampark karein."
-
-5. Knowledge Limit (Agar pata nahi hai toh?)
-Never guess:
-
-"Mujhe iska exact solution nahi pata, lekin aap KVK se confirm kar sakte hain."
-
-"Ye chemical ka exact dosage mujhe maloom nahi, kripya package instructions dekhein."
-
-Example Responses (Examples for Bot)
-Farming Query:
-Farmer: "Meri tomato crop ke leaves curl ho rahe hain?"
-Bot: *"Ye whitefly attack ka sign ho sakta hai. 1. Yellow sticky traps lagayein. 2. Neem oil (5ml/liter) spray karein. 3. Overwatering avoid karein."*
-
-Non-Farming Query:
-User: "iPhone ka screen kaise repair karein?"
-Bot: "Mai sirf farming problems solve karta hoon. Kya aapke kheti se related koi sawaal hai?"`;
         const model = genAI.getGenerativeModel({ 
             model: "gemini-1.5-flash-latest",
             systemInstruction: systemInstruction,
@@ -616,11 +601,16 @@ Bot: "Mai sirf farming problems solve karta hoon. Kya aapke kheti se related koi
             try {
                 const result = await chat.sendMessage(message);
                 const response = await result.response;
-                const text = response.text();
+                const rawText = response.text();
                 
                 hideTypingIndicator();
-                addMessage(text, 'bot');
-                await speakResponse(text); // Use ElevenLabs for TTS
+                
+                // Format the bot's response for display and add it to the chat
+                const formattedText = formatBotMessage(rawText);
+                addMessage(formattedText, 'bot');
+                
+                // Speak the raw, unformatted text
+                await speakResponse(rawText); 
                 
             } catch (error) {
                 console.error('Error getting response from Gemini:', error);
@@ -695,11 +685,30 @@ Bot: "Mai sirf farming problems solve karta hoon. Kya aapke kheti se related koi
         function handleKeyPress(event) {
             if (event.key === 'Enter') sendMessage();
         }
+
+        /**
+         * **NEW FUNCTION**
+         * Replaces markdown-style bolding (**text**) with HTML <strong> tags.
+         */
+        function formatBotMessage(text) {
+            return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
         
+        /**
+         * **UPDATED FUNCTION**
+         * Adds a message to the chat window. Uses innerHTML for the bot to render
+         * formatting, and textContent for the user to prevent XSS.
+         */
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', `${sender}-message`);
-            messageDiv.textContent = text;
+
+            if (sender === 'bot') {
+                messageDiv.innerHTML = text; // Render HTML for bot messages
+            } else {
+                messageDiv.textContent = text; // Use plain text for user messages for security
+            }
+
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
